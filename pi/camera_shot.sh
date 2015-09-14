@@ -1,10 +1,10 @@
 #!/bin/bash
 
 dstUrl="http://dev1.bwebmedia.com/collect.php"
-refresh=5 # delay between each photo
+refresh=1 # delay between each photo
 
 while true ; do
-  imgTag="pi - "`date "+%Y-%m-%d %A %B %H:%M:%S"`
+  imgTag="pi - "`date "+%d/%m/%Y %H:%M:%S"`
   imgName="cam.jpg"
   raspistill -t 1 -w 640 -h 480 -q 50 -o $imgName # camera snapshot
 

@@ -2,9 +2,8 @@
 
 function showLastImage() {
   $lastCameraImg = end(glob('camera/*.jpg'));
-  $img = new Imagick($lastCameraImg);
   header('Content-type: image/jpeg');
-  echo $img;
+  echo new Imagick($lastCameraImg);
 }
 
 if (isset($_REQUEST['get_cam_img'])) {
@@ -21,13 +20,13 @@ if (isset($_REQUEST['get_cam_img'])) {
     <style>
       body {
         text-align: center;
-        background-color: #fff;
+        background-color: #000;
       }
 
       div.camera {
         display: inline-block;
         text-align: center;
-        margin: 5px
+        margin: 5px;
       }
     </style>
   </head>
@@ -41,7 +40,7 @@ if (isset($_REQUEST['get_cam_img'])) {
       setInterval(function() {
         var now = new Date().getTime();
         $("#img_pi").attr("src", "camera.php?get_cam_img=pi&time=" + now);
-      }, 3000);
+      }, 500);
     });
   </script>
   </body>
