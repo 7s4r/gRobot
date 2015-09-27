@@ -1,10 +1,11 @@
-(function() {
+(function($) {
   "use strict";
 
-  function App() {
+  function App(el) {
+    this.$el = $(el);
     this.params = {
-      serverHostname: 'raspberrypi.local',
-      serverAddress: 'raspberrypi.local:8080'
+      serverHostname: "raspberrypi.local",
+      serverAddress: "raspberrypi.local:8080"
     };
     this.ws = null;
     this.pc = null;
@@ -186,8 +187,9 @@
     bindEvents: function () {
       var that = this;
 
-      var el = document.getElementById("video");
-      //el.addEventListener("click", videoClick, false);
+      this.$el.on('click', function (e) {
+        e.preventDefault();
+      });
 
       window.onbeforeunload = function() {
         if (that.ws) {
@@ -198,7 +200,7 @@
     }
   };
 
-  window.onload(function() {
-    var app = new App();
+  $(function() {
+    var app = new App($('[data-app]'));
   });
-});
+}(window.jQuery));

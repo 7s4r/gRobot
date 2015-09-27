@@ -4,15 +4,37 @@ body {
 }
 
 #wrapper {
+  display: block;
+  position: relative;
+  z-index: 1;
   width: 100%;
   height: 100%;
+}
+#wrapper #video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+}
+#wrapper #controls {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5;
 }
 
 #loading {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   z-index: 9999;
+  text-align: center;
 }
-#loading .progressbar {
-  margin: 0 auto;
+#loading #progressBar {
+  width: 50%;
+  margin-top: 25%;
 }
