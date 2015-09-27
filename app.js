@@ -1,11 +1,10 @@
-(function($) {
+(function() {
   "use strict";
 
-  function App(el) {
-    this.$el = $(el);
+  function App() {
     this.params = {
-      serverHostname: window.location.hostname,
-      serverAddress: window.location.hostname + ':' + 8080
+      serverHostname: 'raspberrypi.local',
+      serverAddress: 'raspberrypi.local:8080'
     };
     this.ws = null;
     this.pc = null;
@@ -26,7 +25,6 @@
     this.RTCSessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
     this.RTCIceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
     this.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-    this.url = window.URL;
 
     this.init();
   }
@@ -46,6 +44,7 @@
         this.pc.onaddstream = this.onRemoteStreamAdded;
         this.pc.onremovestream = this.onRemoteStreamRemoved;
         console.log("peer connection successfully created!");
+        this.progressBar.value = 5;
       } catch (e) {
         console.log("createPeerConnection() failed");
       }
@@ -69,15 +68,18 @@
     },
 
     onRemoteStreamAdded: function(e) {
-      console.log("Remote stream added:", this.url.createObjectURL(e.stream));
-      var remoteVideoElement = document.getElementById('remote-video');
-      remoteVideoElement.src = this.url.createObjectURL(e.stream);
-      remoteVideoElement.play();
+      console.log("Remote stream added:", window.URL.createObjectURL(e.stream));
+      var progressBar = document.getElementById("progressBar");
+      progressBar.value = 100;
+      progressBar.style.display = 'none';
+      var video = document.getElementById("remoteVideo");
+      video.src = window.URL.createObjectURL(e.stream);
+      video.play();
     },
 
     onRemoteStreamRemoved: function(e) {
-      var remoteVideoElement = document.getElementById('remote-video');
-      remoteVideoElement.src = '';
+      var video = document.getElementById("remoteVideo");
+      video.src = '';
     },
 
     startVideoStream: function() {
@@ -184,9 +186,8 @@
     bindEvents: function () {
       var that = this;
 
-      this.$el.on('click', function (e) {
-        e.preventDefault();
-      });
+      var el = document.getElementById("video");
+      //el.addEventListener("click", videoClick, false);
 
       window.onbeforeunload = function() {
         if (that.ws) {
@@ -198,6 +199,6 @@
   };
 
   $(function() {
-    var app = new App($('[data-app]'));
+    var app = new App();
   });
 }(window.jQuery));
