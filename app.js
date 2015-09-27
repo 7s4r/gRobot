@@ -18,7 +18,7 @@
     this.mediaConstraints = {
       optional: [],
       mandatory: {
-        OfferToReceiveAudio: true,
+        OfferToReceiveAudio: false,
         OfferToReceiveVideo: true
       }
     };
@@ -42,27 +42,27 @@
     createPeerConnection: function() {
       try {
         this.pc = new this.RTCPeerConnection(this.pcConfig, this.pcOptions);
-        this.pc.onicecandidate = this.onIceCandidate();
-        this.pc.onaddstream = this.onRemoteStreamAdded();
-        this.pc.onremovestream = this.onRemoteStreamRemoved();
+        this.pc.onicecandidate = this.onIceCandidate;
+        this.pc.onaddstream = this.onRemoteStreamAdded;
+        this.pc.onremovestream = this.onRemoteStreamRemoved;
         console.log("peer connection successfully created!");
       } catch (e) {
         console.log("createPeerConnection() failed");
       }
     },
 
-    onIceCandidate: function(event) {
-      if (event.candidate) {
+    onIceCandidate: function(e) {
+      if (e.candidate) {
         var candidate = {
-          sdpMLineIndex: event.candidate.sdpMLineIndex,
-          sdpMid: event.candidate.sdpMid,
-          candidate: event.candidate.candidate
+          sdpMLineIndex: e.candidate.sdpMLineIndex,
+          sdpMid: e.candidate.sdpMid,
+          candidate: e.candidate.candidate
         };
         var command = {
           command_id: "addicecandidate",
           data: JSON.stringify(candidate)
         };
-        ws.send(JSON.stringify(command));
+        this.ws.send(JSON.stringify(command));
       } else {
         console.log("End of candidates.");
       }
@@ -87,7 +87,7 @@
 
         this.ws.onopen = function () {
           console.log("onopen()");
-          this.createPeerConnection();
+          that.createPeerConnection();
           var command = {
             command_id: "offer"
           };
@@ -102,9 +102,9 @@
 
           switch (msg.type) {
             case "offer":
-              that.pc.setRemoteDescription(new this.RTCSessionDescription(msg),
+              that.pc.setRemoteDescription(new that.RTCSessionDescription(msg),
                 function onRemoteSdpSuccess() {
-                  console.log('onRemoteSdpSucces()');
+                  console.log('onRemoteSdpSuccess()');
                   that.pc.createAnswer(function (sessionDescription) {
                     that.pc.setLocalDescription(sessionDescription);
                     var command = {
@@ -115,7 +115,7 @@
                     console.log(command);
                   }, function (error) {
                     alert("Failed to createAnswer: " + error);
-                  }, mediaConstraints);
+                  }, that.mediaConstraints);
                 },
                 function onRemoteSdpError(e) {
                   alert('Failed to setRemoteDescription: ' + e);
@@ -140,7 +140,7 @@
               var candidates = JSON.parse(msg.data);
               for (var i = 0; i < candidates.length; i++) {
                 var elt = candidates[i];
-                var candidate = new this.RTCIceCandidate({sdpMLineIndex: elt.sdpMLineIndex, candidate: elt.candidate});
+                var candidate = new that.RTCIceCandidate({sdpMLineIndex: elt.sdpMLineIndex, candidate: elt.candidate});
                 that.pc.addIceCandidate(candidate,
                   function () {
                     console.log("IceCandidate added: " + JSON.stringify(candidate));
