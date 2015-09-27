@@ -5,7 +5,7 @@
     this.$el = $(el);
     this.params = {
       serverHostname: window.location.hostname,
-      serverAddress: window.location.hostname + ':' + (window.location.port || 80)
+      serverAddress: window.location.hostname + ':' + 8080
     };
     this.ws = null;
     this.pc = null;
@@ -26,7 +26,7 @@
     this.RTCSessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
     this.RTCIceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
     this.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
-    this.url = window.webkitURL || window.URL;
+    this.url = window.URL;
 
     this.init();
   }
