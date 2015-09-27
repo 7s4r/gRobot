@@ -5,7 +5,7 @@
     this.$el = $(el);
     this.params = {
       serverHostname: window.location.hostname,
-      serverAddress: this.params.serverHostname + ':' + (window.location.port || 8080)
+      serverAddress: window.location.hostname + ':' + (window.location.port || 80)
     };
     this.ws = null;
     this.pc = null;
@@ -22,10 +22,10 @@
         OfferToReceiveVideo: true
       }
     };
-    RTCPeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
-    RTCSessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
-    RTCIceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
-    getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
+    this.RTCPeerConnection = window.mozRTCPeerConnection || window.webkitRTCPeerConnection;
+    this.RTCSessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
+    this.RTCIceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
+    this.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
     this.url = window.webkitURL || window.URL;
 
     this.init();
@@ -41,7 +41,7 @@
 
     createPeerConnection: function() {
       try {
-        this.pc = new RTCPeerConnection(this.pcConfig, this.pcOptions);
+        this.pc = new this.RTCPeerConnection(this.pcConfig, this.pcOptions);
         this.pc.onicecandidate = this.onIceCandidate();
         this.pc.onaddstream = this.onRemoteStreamAdded();
         this.pc.onremovestream = this.onRemoteStreamRemoved();
@@ -102,7 +102,7 @@
 
           switch (msg.type) {
             case "offer":
-              that.pc.setRemoteDescription(new RTCSessionDescription(msg),
+              that.pc.setRemoteDescription(new this.RTCSessionDescription(msg),
                 function onRemoteSdpSuccess() {
                   console.log('onRemoteSdpSucces()');
                   that.pc.createAnswer(function (sessionDescription) {
@@ -140,7 +140,7 @@
               var candidates = JSON.parse(msg.data);
               for (var i = 0; i < candidates.length; i++) {
                 var elt = candidates[i];
-                var candidate = new RTCIceCandidate({sdpMLineIndex: elt.sdpMLineIndex, candidate: elt.candidate});
+                var candidate = new this.RTCIceCandidate({sdpMLineIndex: elt.sdpMLineIndex, candidate: elt.candidate});
                 that.pc.addIceCandidate(candidate,
                   function () {
                     console.log("IceCandidate added: " + JSON.stringify(candidate));
