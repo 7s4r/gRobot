@@ -5,21 +5,49 @@
         <title>G-robot control</title>
         <link rel="stylesheet" href="style.css">
     </head>
-    <body>
-        <div id="wrapper" data-app>
+    <body data-app>
+        <div id="wrapper">
             <div id="video">
                 <video width="100%" height="100%" id="remoteVideo">
                     <source src="" type="">
                 </video>
             </div>
-            <div id="controls">
-                <svg id="goUp" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
-                    <title></title>
-                    <circle></circle>
+            <div id="leftControls">
+                <svg id="shoot" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                    <circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="yellow"></circle>
+                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="30" y="68">&#9737;</text>
                 </svg>
-                <svg id="goDown" xmlns="http://www.w3.org/2000/svg" width="48" height="48">
-                    <title></title>
-                    <circle></circle>
+                <a href="#" id="fullscreen">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                        <circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="blue"></circle>
+                        <text fill="#ffffff" font-size="40" font-family="Verdana" x="32" y="65">&#9744;</text>
+                    </svg>
+                </a>
+                <svg id="soviet" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                    <circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="orange"></circle>
+                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="30" y="68">&#9773;</text>
+                </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                    <circle id="shutdown" cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="red"></circle>
+                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="32" y="68">&#10060;</text>
+                </svg>
+            </div>
+            <div id="rightControls">
+                <svg id="goUp" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                    <circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="green"></circle>
+                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="32" y="68">&#8679;</text>
+                </svg>
+                <svg id="goLeft" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                    <circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="green"></circle>
+                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="32" y="68">&#8678;</text>
+                </svg>
+                <svg id="goRight" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                    <circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="green"></circle>
+                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="32" y="68">&#8680;</text>
+                </svg>
+                <svg id="goDown" xmlns="http://www.w3.org/2000/svg" width="100" height="100">
+                    <circle cx="50" cy="50" r="40" stroke="white" stroke-width="2" fill="green"></circle>
+                    <text fill="#ffffff" font-size="45" font-family="Verdana" x="32" y="68">&#8681;</text>
                 </svg>
             </div>
         </div>

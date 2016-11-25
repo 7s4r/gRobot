@@ -1,10 +1,11 @@
 (function($) {
   "use strict";
 
-  function App() {
+  function App(el) {
+    this.$el = $(el);
     this.params = {
       serverHostname: window.location.hostname,
-      serverAddress: window.location.hostname + ":8080"
+      serverAddress: window.location.hostname + ':' + 8080
     };
     this.ws = null;
     this.pc = null;
@@ -14,10 +15,11 @@
     this.pcOptions = {
       optional: [{DtlsSrtpKeyAgreement: true}]
     };
-    this.mediaConstraints = {
+    this.
+mediaConstraints = {
       optional: [],
       mandatory: {
-        OfferToReceiveAudio: false,
+        OfferToReceiveAudio: true,
         OfferToReceiveVideo: true
       }
     };
@@ -25,6 +27,7 @@
     this.RTCSessionDescription = window.mozRTCSessionDescription || window.RTCSessionDescription;
     this.RTCIceCandidate = window.mozRTCIceCandidate || window.RTCIceCandidate;
     this.getUserMedia = navigator.mozGetUserMedia || navigator.webkitGetUserMedia;
+    this.url = window.URL;
 
     this.init();
   }
@@ -33,57 +36,49 @@
     constructor: App,
 
     init: function () {
-      var that = this;
       this.startVideoStream();
       this.bindEvents();
-
-      this.animateProgress = setInterval(function() {
-        that.showProgress();
-      }, 50);
     },
 
     createPeerConnection: function() {
       try {
         this.pc = new this.RTCPeerConnection(this.pcConfig, this.pcOptions);
-        this.pc.onicecandidate = this.onIceCandidate;
-        this.pc.onaddstream = this.onRemoteStreamAdded;
-        this.pc.onremovestream = this.onRemoteStreamRemoved;
+        this.pc.onicecandidate = this.onIceCandidate();
+        this.pc.onaddstream = this.onRemoteStreamAdded();
+        this.pc.onremovestream = this.onRemoteStreamRemoved();
         console.log("peer connection successfully created!");
       } catch (e) {
         console.log("createPeerConnection() failed");
       }
     },
 
-    onIceCandidate: function(e) {
-      if (e.candidate) {
+    onIceCandidate: function(event) {
+      if (event.candidate) {
         var candidate = {
-          sdpMLineIndex: e.candidate.sdpMLineIndex,
-          sdpMid: e.candidate.sdpMid,
-          candidate: e.candidate.candidate
+          sdpMLineIndex: event.candidate.sdpMLineIndex,
+          sdpMid: event.candidate.sdpMid,
+          candidate: event.candidate.candidate
         };
         var command = {
           command_id: "addicecandidate",
           data: JSON.stringify(candidate)
         };
-        this.ws.send(JSON.stringify(command));
+        ws.send(JSON.stringify(command));
       } else {
         console.log("End of candidates.");
       }
     },
 
     onRemoteStreamAdded: function(e) {
-      console.log("Remote stream added:", window.URL.createObjectURL(e.stream));
-      var loading = document.getElementById("loading");
-      loading.style.display = 'none';
-      var video = document.getElementById("remoteVideo");
-      video.src = window.URL.createObjectURL(e.stream);
-      video.play();
-      $("#leftControls, #rightControls").slideDown("slow");
+      console.log("Remote stream added:", this.url.createObjectURL(e.stream));
+      var remoteVideoElement = document.getElementById('remote-video');
+      remoteVideoElement.src = this.url.createObjectURL(e.stream);
+      remoteVideoElement.play();
     },
 
     onRemoteStreamRemoved: function(e) {
-      var video = document.getElementById("remoteVideo");
-      video.src = '';
+      var remoteVideoElement = document.getElementById('remote-video');
+      remoteVideoElement.src = '';
     },
 
     startVideoStream: function() {
@@ -110,7 +105,7 @@
             case "offer":
               that.pc.setRemoteDescription(new that.RTCSessionDescription(msg),
                 function onRemoteSdpSuccess() {
-                  console.log('onRemoteSdpSuccess()');
+                  console.log('onRemoteSdpSucces()');
                   that.pc.createAnswer(function (sessionDescription) {
                     that.pc.setLocalDescription(sessionDescription);
                     var command = {
@@ -121,7 +116,7 @@
                     console.log(command);
                   }, function (error) {
                     alert("Failed to createAnswer: " + error);
-                  }, that.mediaConstraints);
+                  }, mediaConstraints);
                 },
                 function onRemoteSdpError(e) {
                   alert('Failed to setRemoteDescription: ' + e);
@@ -190,17 +185,8 @@
     bindEvents: function () {
       var that = this;
 
-      $("#reboot").on('click', function(e) {
+      this.$el.on('click', function (e) {
         e.preventDefault();
-        that.sendRequest("reboot");
-      });
-      $("#fullscreen").on('click', function(e) {
-        e.preventDefault();
-        that.fullscreen();
-      });
-      $("#shutdown").on('click', function(e) {
-        e.preventDefault();
-        that.sendRequest("shutdown");
       });
 
       window.onbeforeunload = function() {
@@ -209,49 +195,10 @@
           that.stopVideoStream();
         }
       };
-    },
-
-    sendRequest: function(action) {
-      console.log("request: "+action);
-      $.ajax({
-        url: "ws.php",
-        data: {
-          do: action
-        },
-        success: function(data) {
-          console.log(data);
-        },
-        error: function(data) {
-          console.log(data);
-        }
-      });
-    },
-
-    showProgress: function() {
-      var progressBar = $('#progressBar'),
-          value = progressBar.val(),
-          max = progressBar.attr('max');
-
-      progressBar.val(value+1);
-
-      if (value == max) {
-        clearInterval(this.animateProgress);
-      }
-    },
-
-    fullscreen: function() {
-      var remoteVideo = document.getElementById("remoteVideo");
-      if(remoteVideo.requestFullScreen){
-        remoteVideo.requestFullScreen();
-      } else if(remoteVideo.webkitRequestFullScreen){
-        remoteVideo.webkitRequestFullScreen();
-      } else if(remoteVideo.mozRequestFullScreen){
-        remoteVideo.mozRequestFullScreen();
-      }
     }
   };
 
   $(function() {
-    var app = new App();
+    var app = new App($('[data-app]'));
   });
 }(window.jQuery));
